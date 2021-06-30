@@ -1,0 +1,17 @@
+FROM mysql:8.0.25
+MAINTAINER running "A576236148946@126.com"
+
+RUN apt update \
+    && apt install -y procps \
+    && apt install -y net-tools \
+    && apt install -y vim \
+    && apt install -y curl
+
+COPY ./mysql_8.0.25/my.cnf /etc/mysql/my.cnf
+COPY ./mysql_8.0.25/conf.d/mysql.cnf /etc/mysql/conf.d/mysql.cnf
+
+WORKDIR /myself
+
+volume ["/myself"]
+
+CMD ["mysqld"]

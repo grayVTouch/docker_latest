@@ -1,0 +1,24 @@
+# 基础镜像
+FROM nginx:1.20.1
+
+# 维护者
+MAINTAINER running "A576236148946@126.com"
+
+# 安装相关系统必备依赖
+RUN apt update \
+    && apt install procps -y \
+    && apt install net-tools -y \
+    && apt install vim -y \
+    && apt install curl -y
+
+# 工作目录
+WORKDIR /myself
+
+volume ["/myself"]
+
+# 拷贝默认内容
+COPY ./1.20.1/nginx.conf /etc/nginx/nginx.conf
+COPY ./1.20.1/conf.d /etc/nginx/conf.d
+
+# 启动时运行的命令
+CMD ["nginx"]

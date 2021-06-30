@@ -1,0 +1,75 @@
+version: "3.9"
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile_${NGINX_VERSION}
+    ports:
+      - "90:80"
+    links:
+      - php
+    depends_on:
+      - php
+    volumes:
+      - "./nginx/${NGINX_VERSION}/nginx.conf:/etc/nginx/nginx.conf"
+      - "./nginx/${NGINX_VERSION}/conf.d:/etc/nginx/conf.d"
+      # 工作目录映射
+      - "${APP_DIR}:/myself"
+    networks:
+      - frontend
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile_${PHP_VERSION}
+    volumes:
+      - "./php/${PHP_VERSION}/php.ini:/usr/local/etc/php/php.ini"
+      - "./php/${PHP_VERSION}/conf.d:/usr/local/etc/php/conf.d"
+      - "./php/${PHP_VERSION}/php-fpm.conf:/usr/local/etc/php-fpm.conf"
+      - "./php/${PHP_VERSION}/php-fpm.d:/usr/local/etc/php-fpm.d"
+    links:
+      - redis
+      - mysql
+    expose:
+      - 9000
+    networks:
+      - frontend
+      - backend
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile_${MYSQL_VERSION}
+    volumes:
+      - './mysql/8.0.25/my.cnf:/etc/mysql/my.cnf'
+      - './mysql/8.0.25/conf.d:/etc/mysql/conf.d'
+      - './mysql/8.0.25/data:/var/lib/mysql'
+    expose:
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - frontend
+      - backend
+  redis:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile_${REDIS_VERSION}
+    ports:
+      - "6379:6379"
+    expose:
+      - 6379
+    networks:
+      - frontend
+      - backend
+  workspace:
+    build:
+      context: ./workspace
+      dockerfile: Dcokerfile_${PHP_VERSION}
+    volumes:
+      - "./php/${PHP_VERSION}/php.ini:/usr/local/etc/php/php.ini"
+      - "./php/${PHP_VERSION}/conf.d:/usr/local/etc/php/conf.d"
+      - "${APP_DIR}:/myself"
+      - "./cron:/etc/cron.d"
+
+networks:
+  frontend:
+  backend:

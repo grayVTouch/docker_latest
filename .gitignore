@@ -1,0 +1,7 @@
+./mysql/8.0.25/my.cnf
+./nginx/1.20.1/nginx.conf
+./php/8.0.7/php-fpm.conf
+./php/8.0.7/php.ini
+./redis/6.2.4/redis.conf
+./workspace/8.0.7/php.ini
+./.idea

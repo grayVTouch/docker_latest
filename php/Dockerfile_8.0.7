@@ -1,0 +1,43 @@
+FROM php:8.0.7-fpm
+MAINTAINER running "A576236148946@126.com"
+
+RUN apt update \
+    && apt install -y procps \
+    && apt install -y net-tools \
+    && apt install -y vim \
+    && apt install -y curl
+
+# 安装 php 扩展相关依赖
+RUN apt install -y libfreetype6-dev \
+    && apt install -y libjpeg62-turbo-dev \
+    && apt install -y libpng-dev \
+    && apt install -y libbz2-dev \
+    && apt install -y libsqlite3-dev \
+    && apt install -y zlib1g-dev \
+    && apt install -y libzip-dev
+
+# 启用 gd 扩展
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+# 其他核心扩展
+RUN docker-php-ext-install bz2
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_sqlite
+RUN docker-php-ext-install bcmath
+RUN docker-php-ext-install sockets
+
+# 独立扩展
+RUN pecl install redis-5.3.4 && docker-php-ext-enable redis
+RUN pecl install swoole-4.6.7 && docker-php-ext-enable swoole
+RUN pecl install zip-1.19.3 && docker-php-ext-enable zip
+
+COPY ./php_8.0.7/php-fpm.conf /usr/local/etc/php-fpm.conf
+COPY ./php_8.0.7/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY ./php_8.0.7/php.ini /usr/local/etc/php/conf.d/php.ini
+
+WORKDIR /myself
+
+volume ["/myself"]
+
+CMD ["php-fpm"]
