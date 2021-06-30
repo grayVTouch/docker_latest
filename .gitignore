@@ -4,4 +4,3 @@
 ./php/8.0.7/php.ini
 ./redis/6.2.4/redis.conf
 ./workspace/8.0.7/php.ini
-./.idea
